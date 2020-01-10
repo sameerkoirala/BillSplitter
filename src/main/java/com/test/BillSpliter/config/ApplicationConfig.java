@@ -1,4 +1,4 @@
-package com.test.BillSpliter;
+package com.test.BillSpliter.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -18,7 +18,9 @@ public class ApplicationConfig extends WebMvcConfigurationSupport {
     @Override
     protected void addResourceHandlers(ResourceHandlerRegistry registry)
     {
-        registry.addResourceHandler("css/**","images/**").addResourceLocations("classpath:/static/css","classpath:/static/images");
+        registry.addResourceHandler("css/**","img/**","js/**","scss/**","vendor/**")
+                .addResourceLocations("classpath:/static/css/","classpath:/static/img/","classpath:/static/js/","classpath:/static/scss/","classpath:/static/vendor/");
+
     }
 
     @Bean
