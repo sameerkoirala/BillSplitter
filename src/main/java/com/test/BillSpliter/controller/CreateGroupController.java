@@ -1,6 +1,8 @@
 package com.test.BillSpliter.controller;
 
+import com.test.BillSpliter.beans.GroupMember;
 import com.test.BillSpliter.beans.User;
+import com.test.BillSpliter.repository.GroupRepository;
 import com.test.BillSpliter.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -18,27 +20,64 @@ public class CreateGroupController {
 
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private GroupRepository groupRepository;
 
     private  ArrayList<User> userList ;
     @PostMapping("/createGroup")
     public  String createGroup(@RequestParam Map<String,String> allParams){
 
         String groupName = allParams.get("gName");
+        GroupMember dbsearchResult = (groupRepository.searchGroup(groupName));
+        GroupMember group = new GroupMember();
+        List<GroupMember> groupList = new ArrayList<GroupMember>();
+        if(dbsearchResult == null) {
 
+            userList = new ArrayList<User>();
+            userList = userRepository.getAllUser();
+            quickSort(userList, 0, userList.size() - 1);
 
-        userList = new ArrayList<User>();
-        userList = userRepository.getAllUser();
-        quickSort(userList,0,userList.size()-1);
+            groupList = groupRepository.getAllMembers();
 
-        for (Map.Entry<String,String> s:allParams.entrySet())
-        {
+            Boolean result = false;
+            int i = 0;
+            int groupID = 0;
+            for (Map.Entry<String, String> s : allParams.entrySet()) {
+                if(i != 0) {
+                    for (User u : userList) {
+                        if (s.getValue().equalsIgnoreCase(u.getPhoneNumber())) {
+                            if(i == 1)
+                            {
+                                group.setUserID(u.getId());
+                                if(groupList.size() != 0)
+                                {
+                                   groupID = groupList.get(0).getGroupID() + 1;
+                                }
+                                group.setGroupID(groupID);
+                                groupRepository.save(group);
+                            }
+                            else
+                            {
+                                group.setUserID(u.getId());
+                                group.setGroupID(groupID);
+                                groupRepository.save(group);
+                            }
+                        }
+
+                    }
+                }
+                else
+                {
+                    group.setGroupName(s.getValue());
+                }
+                i++;
+            }
+
 
         }
-
-        for(User u : userList)
+        else
         {
-
-
+            System.out.println("group ALready exist");
         }
 
         System.out.println("this is " + allParams);

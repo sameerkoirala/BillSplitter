@@ -1,12 +1,23 @@
 package com.test.BillSpliter.beans;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 
-@Entity
-public class Group {
+
+import javax.persistence.*;
+import java.io.Serializable;
+
+@Entity @IdClass(GroupMemberIDClasses.class)
+public class GroupMember implements Serializable {
+
+    @Id
+    private int groupID;
+
+    @Id
+    private int userID;
+
+    @Column(length = 20)
+    private String groupName;
+
+
 
     public int getGroupID() {
         return groupID;
@@ -32,11 +43,12 @@ public class Group {
         this.userID = userID;
     }
 
-    @Id @GeneratedValue(strategy= GenerationType.IDENTITY)
-    private int groupID;
-    private String groupName;
-    private int userID;
 
 
 
 }
+class GroupMemberIDClasses implements Serializable {
+    int groupID;
+    int userID;
+}
+
