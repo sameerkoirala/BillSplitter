@@ -1,5 +1,6 @@
 package com.test.BillSpliter.controller;
 
+import com.test.BillSpliter.beans.Login;
 import com.test.BillSpliter.beans.User;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -8,19 +9,20 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 public class HomeController {
-    @GetMapping("/home")
-    public String goHome()
-    {
-        return "index";
-    }
+
+//    @GetMapping({"/","/home"})
+//    public String gotoHome()
+//    {
+//        return "index";
+//    }
     @GetMapping("/signup")
     public String goSignup()
     {
         return "signup";
     }
-    @ModelAttribute("newuser")
-    public User getDefaultUser()
-    {
-        return  new User();
-    }
+
+    @GetMapping("/Login")
+    public String goLogin(){return "Login";}
+
+
 }
