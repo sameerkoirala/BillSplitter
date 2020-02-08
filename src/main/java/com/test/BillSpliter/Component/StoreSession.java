@@ -1,4 +1,4 @@
-package com.test.BillSpliter.config;
+package com.test.BillSpliter.Component;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.DefaultRedirectStrategy;

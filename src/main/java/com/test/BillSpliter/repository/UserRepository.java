@@ -16,8 +16,9 @@ public interface UserRepository extends CrudRepository<User,Integer> {
     @Query("select u from User u ")
     public ArrayList<User> getAllUser();
 
-//    @Query("Select u from User u  where u.fullName like %:name% ")
-//    public List<User> searchUser(@Param("name") String name);
+    @Query("Select u from User u  where u.fullName = :name ")
+    public User getUserId(@Param("name") String name);
+
     @Query("select u from User u where u.userName = :username")
     public User getUserByUserName(@Param("username")String username);
 

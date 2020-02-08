@@ -10,11 +10,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 @Controller
 public class HomeController {
 
-//    @GetMapping({"/","/home"})
-//    public String gotoHome()
-//    {
-//        return "index";
-//    }
     @GetMapping("/signup")
     public String goSignup()
     {

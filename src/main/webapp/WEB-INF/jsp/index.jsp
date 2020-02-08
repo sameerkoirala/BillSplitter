@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib uri = "http://java.sun.com/jsp/jstl/functions" prefix = "fn" %>
 <html lang="en">
 
 <head>
@@ -206,7 +207,7 @@
 <%--                                Settings--%>
 <%--                            </a>--%>
                             <div class="dropdown-divider"></div>
-                            <a class="dropdown-item" onclick="document.forms['logoutForm'].submit()">
+                            <a class="dropdown-item" data-toggle="modal" data-target="#logoutModal">
                                 <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
                                 Logout
                             </a>
@@ -279,12 +280,10 @@
                                         <div class="table-responsive">
                                             <table class="table " id="dynamic_field">
                                                 <tr>
-                                                    <td><input type="text" name="name0" placeholder="Enter member Name"
+                                                    <td><input type="text" name="name0" placeholder="Enter member's Phone Number"
                                                                class="form-control name_list"/></td>
                                                     <td>
-                                                        <button type="button" name="add" id="add"
-                                                                class="btn btn-success"> + Add
-                                                        </button>
+                                                        <button type="button" name="add" id="add" class="btn btn-success"> + Add</button>
                                                     </td>
                                                 </tr>
                                             </table>
@@ -305,11 +304,19 @@
 
                 <!-- Page Heading -->
                 <div class="d-sm-flex align-items-center justify-content-between mb-4">
-                    <h1 class="h3 mb-0 text-gray-800">Dashboard</h1>
+                    <c:choose>
+                        <c:when test="${!empty(gName)}">
+                            <h1 class="h3 mb-0 text-gray-800">Dashboard for ${gName} group </h1>
+                        </c:when>
+                        <c:otherwise>
+                            <h1 class="h3 mb-0 text-gray-800">Dashboard for selecting or creating  a group  </h1>
+                        </c:otherwise>
+                    </c:choose>
                     <a href="#" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i
                             class="fas fa-download fa-sm text-white-50"></i> Generate Report</a>
                 </div>
-
+<c:choose>
+    <c:when test="${!empty(nameLists)}">
                 <!-- Content Row -->
                 <div class="row">
 
@@ -318,28 +325,29 @@
                         <div class="card border-left-primary shadow h-100 py-2">
                             <div class="card-body">
 
-                                <%--                                                    <div class="row no-gutters align-items-center ">--%>
-                                <form>
+                                <%--<div class="row no-gutters align-items-center ">--%>
+                                <form:form type="Post" action="/billDetails" modelAttribute="newBillingDetails">
                                     <div class="form-inline form-group">
 
-                                        <div class="form-group col-md-4 ">
+                                        <div class="form-group col-md-3 ">
                                             <label class="form-label col-md-4 " for="description"> Description: </label>
-                                            <input type="text" id="description" name="description"
-                                                   class="form-control col-md-8 " placeholder="Description"/>
+                                            <form:input type="text" id="description" path="description" class="form-control col-md-8 " placeholder="Description"/>
                                         </div>
 
+                                        <div class="form-group col-md-3 ">
+                                            <label class="form-label col-md-4 " for="description"> Date: </label>
+                                            <form:input type="date" id="date" path="date" class="form-control col-md-8 " placeholder="Date"/>
+                                        </div>
                                         <div class="col-md-3 form-group">
                                             <label class="form-label col-md-4 " for="amount"> Amount: </label>
-                                            <input type="number" name="amount" id="amount"
-                                                   class="form-control col-md-6 " placeholder="Amount"/>
+                                            <form:input type="number" step="0.01" path="amount" id="amount" class="form-control col-md-6 " placeholder="Amount"/>
                                         </div>
 
-
-                                        <div class="form-group col-md-4">
+                                        <div class="form-group col-md-3">
 
                                             <label for="paidPerson" class="form-label col-md-4"> Paid By: </label>
 
-                                            <select class="form-control col-md-6" id="paidPerson">
+                                            <form:select path="paidBy" class="form-control col-md-6" id="paidPerson">
                                                 <c:choose>
                                                 <c:when test = "${!empty(nameLists)}">
                                                 <c:forEach var="names" items="${nameLists}">
@@ -349,37 +357,127 @@
                                                     <c:otherwise><option>No Person</option></c:otherwise>
                                                 </c:choose>
 
-                                            </select>
+                                            </form:select>
 
                                         </div>
                                     </div>
 
-                                <div class="form-group col-md-12" >
-                                    <div class="col-md-4">
-                                    <h6>Split On: </h6>
-                                    </div>
-                                    <div class="col-md-8">
-                                        <c:choose>
-                                            <c:when test = "${!empty(nameLists)}">
-                                                <c:forEach var="names" items="${nameLists}">
-                                                    <div class="form-check form-check-inline" >
-                                                        <input class="form-check-input" type="checkbox" value="${names}" id="inlineCheckbox1">
-                                                        <label class="form-check-label" for="inlineCheckbox1"> ${names}</label>
-                                                    </div>
-                                                </c:forEach>
-                                            </c:when>
-                                            <c:otherwise></c:otherwise>
-                                        </c:choose>
-                                    </div>
-                                </div>
+                                <table class="table col-md-12" >
+                                    <tr>
+                                        <td class="col-md-1">Split On:</td>
 
-                                </form>
-                                <%--                                                    </div>--%>
+                                    <td class="col-md-10">
+                                        <form:checkboxes element="span class='checkbox col-md-3'"  path="splitedOn" class="form-check-input" items="${nameLists}" id="inlineCheckbox1"/>
+                                    </td>
+                                    </tr>
+                                </table>
+                                    <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+
+
+                                    <div class="d-inline">
+                                       <form:button class="btn btn-outline-primary" type="submit">Add</form:button>
+                                    </div>
+                                    <div class="d-inline">
+                                        <button type="button" class ="btn btn-outline-primary" onclick="location.href='/calculate'">Settlement</button>
+                                    </div>
+                                    <div class="d-inline">
+                                        <button type="reset" class ="btn btn-outline-primary">Reset</button>
+                                    </div>
+                                    <form:input path="groupName" type="hidden" value="${gName}"/>
+
+<%--                                    <c:set var="id" value="0"/>--%>
+<%--                                    <c:if test="${!empty(billingDetailsList)}">--%>
+<%--                                        <c:set var="id" value="${fn:length(billingDetailsList)}"/>--%>
+<%--                                    </c:if>--%>
+<%--                                    <form:input path="transId" type="hidden" value="${id}"/>--%>
+
+                                </form:form>
+
 
                             </div>
                         </div>
                     </div>
                 </div>
+    </c:when>
+    <c:otherwise>
+                <div class="row">
+
+                <!-- Earnings (Monthly) Card Example -->
+                <div class="col-xl-12 col-md-12 mb-12">
+                    <div class="card border-left-primary shadow h-100 py-2">
+                        <div class="card-body">
+                            <c:if test="${!empty(groupName)}">
+                                <c:forEach var="gname" items="${groupName}">
+                                   <h3> <a class="collapse-item" href="/groupDetails?groupName=${gname}">${gname}</a> </h3>
+                                </c:forEach>
+                            </c:if>
+                            <a class="collapse-item" href="" data-toggle="modal" data-target="#modalcreateGroupForm">Create
+                                Group</a>
+                        </div>
+                    </div>
+                </div>
+                </div>
+                            </c:otherwise>
+</c:choose>
+                <c:if test="${!empty(billingDetailsList)}">
+                    <div class="row" style="margin-top: 20px">
+                        <!-- Earnings (Monthly) Card Example -->
+                        <div class="col-xl-12 col-md-12 mb-12">
+                            <div class="card border-left-primary shadow h-100 py-2">
+                                <div class="card-body">
+                                    <table class="table">
+                                        <thead>
+                                        <th>Date</th>
+                                        <th>Paid By</th>
+                                        <th>Description</th>
+                                        <th>Paid Amount</th>
+                                        <th>Split Amount</th>
+                                        <th>Split On</th>
+                                        </thead>
+                                        <tbody>
+                                        <c:forEach items = "${billingDetailsList}" var = "billLists">
+                                            <tr>
+                                                <td>${billLists.date}</td>
+                                                <td>${billLists.paidBy}</td>
+                                                <td>${billLists.description}</td>
+                                                <td>${billLists.amount}</td>
+                                                <td>${billLists.spittedAmount}</td>
+                                              <td>  <c:forEach items = "${billLists.splitedOn}" var="nList">
+                                                   <spam> ${nList}</spam>,
+                                                </c:forEach></td>
+                                                <td><button class="btn btn-block btn-danger" onclick="location.href='/remove?id=${billLists.transId}'">Remove</button></td>
+                                            </tr>
+                                        </c:forEach>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </c:if>
+
+                <c:if test="${!empty(data)}">
+                    <div class="row" style="margin-top: 20px">
+                        <!-- Earnings (Monthly) Card Example -->
+                        <div class="col-xl-12 col-md-12 mb-12">
+                            <div class="card border-left-primary shadow h-100 py-2">
+                                <div class="card-body">
+                                    <h3>Final Settlement</h3>
+                                    <table class="table tab-content">
+                                        <tr>
+                                        <c:forEach items = "${data}" var = "dataLists">
+                                           <td>
+                                            <c:forEach items = "${dataLists.value}" var="valueList">
+                                                <p>${valueList.name} pays <span>${dataLists.key}</span> = <span>${valueList.amount}</span> </p>
+                                            </c:forEach></td>
+                                        </c:forEach>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </c:if>
 
             </div>
             <!-- /.container-fluid -->
@@ -419,10 +517,10 @@
                     <span aria-hidden="true">×</span>
                 </button>
             </div>
-            <div class="modal-body">Select "Logout" below if you are ready to end your current session.</div>
+            <div class="modal-body">Are you sure wanna Logout? </div>
             <div class="modal-footer">
                 <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
-                <a class="btn btn-primary" href="login.html">Logout</a>
+                <a class="btn btn-primary" onclick="document.forms['logoutForm'].submit()">Logout</a>
             </div>
         </div>
     </div>

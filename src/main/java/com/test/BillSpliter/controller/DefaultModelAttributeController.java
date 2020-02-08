@@ -1,6 +1,7 @@
 package com.test.BillSpliter.controller;
 
 
+import com.test.BillSpliter.beans.BillingDetails;
 import com.test.BillSpliter.beans.Login;
 import com.test.BillSpliter.beans.User;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -20,4 +21,7 @@ public class DefaultModelAttributeController {
     {
         return  new Login();
     }
+
+    @ModelAttribute("newBillingDetails")
+    public BillingDetails getDefaultBillingDetails(){return new BillingDetails();}
 }

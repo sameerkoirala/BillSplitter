@@ -1,6 +1,6 @@
 package com.test.BillSpliter.controller;
 
-import com.test.BillSpliter.Services.GroupCreationServices;
+import com.test.BillSpliter.Services.GroupServices;
 import com.test.BillSpliter.beans.GroupMember;
 import com.test.BillSpliter.beans.User;
 import com.test.BillSpliter.repository.GroupRepository;
@@ -20,12 +20,12 @@ import java.util.Optional;
 public class CreateGroupController {
 
     @Autowired
-    private GroupCreationServices groupCreationServices;
+    private GroupServices groupServices;
 
     @PostMapping("/createGroup")
     public  String createGroup(@RequestParam Map<String,String> allParams){
 
-        groupCreationServices.createGroup(allParams);
+        groupServices.createGroup(allParams);
         return "index";
     }
 

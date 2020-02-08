@@ -2,6 +2,7 @@ package com.test.BillSpliter.Services;
 
 import com.test.BillSpliter.beans.GroupMember;
 import com.test.BillSpliter.beans.User;
+import com.test.BillSpliter.repository.GroupMemberRepository;
 import com.test.BillSpliter.repository.GroupRepository;
 import com.test.BillSpliter.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,8 +20,11 @@ public class UserServices {
     @Autowired
     private GroupRepository groupRepository;
 
-    private ArrayList<String> groupNameList;
-    private ArrayList<GroupMember> groupListOfUser ;
+    @Autowired
+    private GroupMemberRepository groupMemberRepository;
+
+
+    private ArrayList<Integer> userIdList ;
     private ArrayList<String> nameList ;
 
 
@@ -29,24 +33,21 @@ public class UserServices {
         return userRepository.getUserByUserName(username);
 
     }
-    public ArrayList<String> userGroupList(int userId)
+    public ArrayList<String> userNameList(String groupName)
     {
-        groupNameList = new ArrayList<String>();
-        groupListOfUser = new ArrayList<GroupMember>();
-        nameList = new ArrayList<String>();
-        int groupId = groupRepository.groupId(userId);
-        groupListOfUser = groupRepository.groupListById(groupId);
-        for (GroupMember g:groupListOfUser) {
 
-            nameList.add(userRepository.getUserById(g.getUserID()).getFullName());
-            groupNameList.add(g.getGroupName());
-        }
+        userIdList = new ArrayList<Integer>();
+        nameList = new ArrayList<String>();
+            userIdList = groupMemberRepository.UserIdList(groupRepository.searchGroup(groupName).getGroupId());
+            for (Integer id : userIdList) {
+
+                nameList.add(userRepository.getUserById(id).getFullName());
+            }
+
         return nameList;
     }
-    public ArrayList<String> getGroupNameList()
-    {
-        return groupNameList;
-    }
+
+
 
 
 

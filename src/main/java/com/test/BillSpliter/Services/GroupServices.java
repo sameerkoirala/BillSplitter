@@ -1,34 +1,45 @@
 package com.test.BillSpliter.Services;
 
 import com.test.BillSpliter.beans.GroupMember;
+import com.test.BillSpliter.beans.GroupsList;
 import com.test.BillSpliter.beans.User;
+import com.test.BillSpliter.repository.GroupMemberRepository;
 import com.test.BillSpliter.repository.GroupRepository;
 import com.test.BillSpliter.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.security.acl.Group;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 
 @Service
-public class GroupCreationServices {
+public class GroupServices {
 
     @Autowired
     private UserRepository userRepository;
     @Autowired
     private GroupRepository groupRepository;
+    @Autowired
+    private GroupMemberRepository groupMemberRepository;
 
     private ArrayList<User> userList;
+    private ArrayList<String> groupNameList;
 
     public void createGroup(Map<String,String> formDetails) {
 
         String groupName = formDetails.get("gName");
         groupName = groupName.toLowerCase();
-        GroupMember dbsearchResult = (groupRepository.searchGroup(groupName));
-        GroupMember group = new GroupMember();
-        List<GroupMember> groupList = new ArrayList<GroupMember>();
+        //searching the groups table for the groupname
+        GroupsList dbsearchResult = (groupRepository.searchGroup(groupName));
+
+        GroupMember groupMember = new GroupMember();
+        GroupsList groups = new GroupsList();
+
+        List<GroupsList> groupList = new ArrayList<GroupsList>();
+
         if (dbsearchResult == null) {
 
             userList = new ArrayList<User>();
@@ -37,45 +48,42 @@ public class GroupCreationServices {
 
             groupList = groupRepository.getAllMembers();
 
-
             int i = 0;
             int groupID = 0;
-            int profileUserId = 0;
             String profileName = formDetails.get("profileName");
 
             for (Map.Entry<String, String> s : formDetails.entrySet()) {
-                if (i > 0 && i< formDetails.size()-2) {
+                if (i > 0 && i< formDetails.size()-2) { //running the loops only for the user names
                     for (User u : userList) {
-                        if (s.getValue().equalsIgnoreCase(u.getPhoneNumber())) {
+                        if (s.getValue().equalsIgnoreCase(u.getPhoneNumber())) { //comparing the entered user phonenumber with db phonenumber
                             if (i == 1) {
-                                group.setUserID(u.getId());
+                                groupMember.setUserID(u.getId());
                                 if (groupList.size() != 0) {
-                                    groupID = groupList.get(0).getGroupID() + 1;
+                                    groupID = groupList.get(0).getGroupId() + 1;
                                 }
-                                group.setGroupID(groupID);
-                                groupRepository.save(group);
+                                groupMember.setGroupID(groupID);
+                                groups.setGroupId(groupID);
+                                groupMemberRepository.save(groupMember);
+                                groupRepository.save(groups);
                                 break;
                             } else {
-                                group.setUserID(u.getId());
-                                group.setGroupID(groupID);
-                                groupRepository.save(group);
+                                groupMember.setUserID(u.getId());
+                                groupMember.setGroupID(groupID);
+                                groupMemberRepository.save(groupMember);
                                 break;
                             }
                         }
-                        else if(u.getFullName().equalsIgnoreCase(profileName)){
-                            profileUserId = u.getId();
-                        }
-
                     }
                 }
                 else if(i == formDetails.size()-2)
                 {
-                    group.setUserID(profileUserId);
-                    group.setGroupID(groupID);
-                    groupRepository.save(group);
+                    int profileUserId = userRepository.getUserId(profileName).getId();
+                    groupMember.setUserID(profileUserId);
+                    groupMember.setGroupID(groupID);
+                    groupMemberRepository.save(groupMember);
                 }
                 else if(i == 0){
-                    group.setGroupName(s.getValue());
+                    groups.setGroupName(s.getValue());
                 }
                 i++;
             }
@@ -86,6 +94,18 @@ public class GroupCreationServices {
         }
 
         System.out.println("this is " + formDetails);
+    }
+
+    public ArrayList<String> getGroupNameList(int userId)
+    {
+        groupNameList = new ArrayList<String>();
+        ArrayList<Integer> groupId = groupMemberRepository.groupId(userId);
+        if(groupId.size() != 0 ) {
+            for (Integer id : groupId) {
+                groupNameList.add(groupRepository.groupListById(id));
+            }
+        }
+        return groupNameList;
     }
 
     public void quickSort(ArrayList<User> list, int left, int right)
