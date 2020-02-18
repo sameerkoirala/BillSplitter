@@ -26,8 +26,13 @@
     <link href="css/bootstrap.min.css" rel="stylesheet">
     <link href="css/bootstrap-grid.min.css" rel="stylesheet">
     <link href="css/bootstrap-reboot.min.css" rel="stylesheet">
+    <link href="css/responsive.css" rel="stylesheet">
 
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.js"></script>
+    <style type="text/css">
+
+    </style>
+
 
 
 </head>
@@ -125,8 +130,6 @@
                     <a class="collapse-item" href="login.html">Login</a>
                     <a class="collapse-item" href="" data-toggle="modal" data-target="#modalcreateGroupForm">Create
                         Group</a>
-                    <a class="collapse-item" href="" data-toggle="modal" data-target="#modaladdMemberForm">Add
-                        member</a>
                     <a class="collapse-item" href="forgot-password.html">Forgot Password</a>
                     <div class="collapse-divider"></div>
                     <h6 class="collapse-header">Other Pages:</h6>
@@ -221,6 +224,7 @@
             <!-- Begin Page Content -->
             <div class="container-fluid">
 
+                <!-- Modal form for Adding Member -->
                 <div class="modal fade" id="modaladdMemberForm" tabindex="-1" role="dialog"
                      aria-labelledby="myModalLabel"
                      aria-hidden="true">
@@ -235,24 +239,16 @@
                                 </div>
                                 <div class="modal-body mx-3">
                                     <div class="md-form mb-5">
-                                        <i class="fas fa-user prefix grey-text"></i>
-                                        <input type="text" name="name" id="orangeForm-name"
-                                               class="form-control validate"/>
-                                        <label data-error="wrong" data-success="right" for="orangeForm-name">Your
-                                            name</label>
+                                        <input type="text" name="name" id="orangeForm-name" placeholder="Member Name" class="form-control validate"/>
                                     </div>
                                     <div class="md-form mb-5">
-                                        <i class="fas fa-envelope prefix grey-text"></i>
-                                        <input name="number" type="text" id="orangeForm-email"
-                                               class="form-control validate"/>
-                                        <label data-error="wrong" data-success="right" for="orangeForm-email">Phone
-                                            Number</label>
+                                        <input name="number" type="text" id="orangeForm-email" placeholder="Phone Number" class="form-control validate"/>
                                     </div>
-
+                                        <input type="hidden" name="groupName" value="${gName}"/>
                                 </div>
                                 <div class="modal-footer d-flex justify-content-center">
                                     <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
-                                    <button class="btn btn-primary">ADD</button>
+                                    <button class="btn btn-primary">Add Member</button>
                                 </div>
                             </div>
                         </div>
@@ -307,13 +303,14 @@
                     <c:choose>
                         <c:when test="${!empty(gName)}">
                             <h1 class="h3 mb-0 text-gray-800">Dashboard for ${gName} group </h1>
+                            <a href="#" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm" data-toggle="modal" data-target="#modaladdMemberForm"><i
+                                    class="fas fa-plus fa-sm text-white-50" ></i> Add Member</a>
                         </c:when>
                         <c:otherwise>
                             <h1 class="h3 mb-0 text-gray-800">Dashboard for selecting or creating  a group  </h1>
                         </c:otherwise>
                     </c:choose>
-                    <a href="#" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i
-                            class="fas fa-download fa-sm text-white-50"></i> Generate Report</a>
+
                 </div>
 <c:choose>
     <c:when test="${!empty(nameLists)}">
@@ -362,11 +359,11 @@
                                         </div>
                                     </div>
 
-                                <table class="table col-md-12" >
-                                    <tr>
-                                        <td class="col-md-1">Split On:</td>
+                                <table class="table col-12" >
+                                    <tr class = "d-flex">
+                                        <td class="col-1">Split On:</td>
 
-                                    <td class="col-md-10">
+                                    <td class="col-10">
                                         <form:checkboxes element="span class='checkbox col-md-3'"  path="splitedOn" class="form-check-input" items="${nameLists}" id="inlineCheckbox1"/>
                                     </td>
                                     </tr>
@@ -382,6 +379,12 @@
                                     </div>
                                     <div class="d-inline">
                                         <button type="reset" class ="btn btn-outline-primary">Reset</button>
+                                    </div>
+                                    <div class="d-inline">
+                                        <button type="button" onclick="checkAll()" class ="btn btn-outline-primary">Select All</button>
+                                    </div>
+                                    <div class="d-inline">
+                                        <button type="button" onclick="UncheckAll()" class ="btn btn-outline-primary">UnSelect All</button>
                                     </div>
                                     <form:input path="groupName" type="hidden" value="${gName}"/>
 
@@ -403,7 +406,7 @@
                 <div class="row">
 
                 <!-- Earnings (Monthly) Card Example -->
-                <div class="col-xl-12 col-md-12 mb-12">
+                <div class="col-12 mb-12">
                     <div class="card border-left-primary shadow h-100 py-2">
                         <div class="card-body">
                             <c:if test="${!empty(groupName)}">
@@ -427,12 +430,12 @@
                                 <div class="card-body">
                                     <table class="table">
                                         <thead>
-                                        <th>Date</th>
-                                        <th>Paid By</th>
-                                        <th>Description</th>
-                                        <th>Paid Amount</th>
-                                        <th>Split Amount</th>
-                                        <th>Split On</th>
+                                        <th scope="col">Date</th>
+                                        <th scope="col">Paid By</th>
+                                        <th scope="col">Description</th>
+                                        <th scope="col">Paid Amount</th>
+                                        <th scope="col">Split Amount</th>
+                                        <th scope="col">Split On</th>
                                         </thead>
                                         <tbody>
                                         <c:forEach items = "${billingDetailsList}" var = "billLists">
@@ -553,6 +556,28 @@
 
     });
 
+    function checkAll()
+    {
+
+        //alert("Check all the checkboxes...");
+        var allRows = document.getElementsByName("splitedOn");
+        console.log(allRows);
+        for (var i=0; i < allRows.length; i++) {
+            if (allRows[i].type == 'checkbox')
+            {
+                allRows[i].checked = true;
+            }
+        }
+
+    }
+
+    function UncheckAll(){
+        var items=document.getElementsByName('splitedOn');
+        for(var i=0; i<items.length; i++){
+            if(items[i].type=='checkbox')
+                items[i].checked=false;
+        }
+    }
 
 </script>
 

@@ -1,5 +1,6 @@
 package com.test.BillSpliter.controller;
 
+import com.test.BillSpliter.Services.UserServices;
 import com.test.BillSpliter.beans.User;
 import com.test.BillSpliter.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,13 +13,13 @@ import org.springframework.web.bind.annotation.PostMapping;
 public class RegistrationController {
 
     @Autowired
-    private UserRepository userRepository;
+    private UserServices userServices;
 
 
     @PostMapping("/registeruser")
     public String registerUser(@ModelAttribute("newuser")User user)
     {
-        userRepository.save(user);
+       userServices.addUser(user);
         return "Login";
     }
 

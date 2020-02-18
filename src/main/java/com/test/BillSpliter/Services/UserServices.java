@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 
 import java.util.ArrayList;
+import java.util.Optional;
 
 
 @Service
@@ -28,6 +29,35 @@ public class UserServices {
     private ArrayList<String> nameList ;
 
 
+    public void addUser(User user)
+    {
+        User isUserExist = userRepository.getUserByPhoneNumber(user.getPhoneNumber());
+        if(isUserExist == null)
+        {
+            userRepository.save(user);
+        }
+        else
+        {
+            User u = userRepository.findById(isUserExist.getId()).orElse(new User());
+            u.setFullName(user.getFullName());
+            u.setUserName(user.getUserName());
+            u.setPassword(user.getPassword());
+            userRepository.save(u);
+        }
+    }
+
+    public User getUserByPhoneNumber(String phoneNumber)
+    {
+      User user = userRepository.getUserByPhoneNumber(phoneNumber);
+      return user;
+    }
+
+    public User getUserByName(String name)
+    {
+        User user = userRepository.getUserByName(name);
+        return user;
+    }
+
     public User getUserByUsername(String username)
     {
         return userRepository.getUserByUserName(username);
@@ -43,12 +73,6 @@ public class UserServices {
 
                 nameList.add(userRepository.getUserById(id).getFullName());
             }
-
         return nameList;
     }
-
-
-
-
-
 }

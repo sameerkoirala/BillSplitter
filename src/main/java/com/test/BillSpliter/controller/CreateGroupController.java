@@ -1,20 +1,16 @@
 package com.test.BillSpliter.controller;
 
 import com.test.BillSpliter.Services.GroupServices;
-import com.test.BillSpliter.beans.GroupMember;
-import com.test.BillSpliter.beans.User;
-import com.test.BillSpliter.repository.GroupRepository;
-import com.test.BillSpliter.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
+
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.ModelAndView;
 
-import java.util.ArrayList;
-import java.util.List;
+
 import java.util.Map;
-import java.util.Optional;
+
 
 @Controller
 public class CreateGroupController {
@@ -23,29 +19,18 @@ public class CreateGroupController {
     private GroupServices groupServices;
 
     @PostMapping("/createGroup")
-    public  String createGroup(@RequestParam Map<String,String> allParams){
+    public  ModelAndView createGroup(@RequestParam Map<String,String> allParams){
 
         groupServices.createGroup(allParams);
-        return "index";
+        return new ModelAndView("redirect:/home");
     }
 
-//    @PostMapping("/addmember")
-//    public String addmember(@RequestParam("name") String name, @RequestParam (required = false)  String number)
-//    {
-//       userList = new ArrayList<User>();
-//      //  userList = userRepository.searchUser(name);
-//
-//
-//        if(userList.size() != 0 && number != "")
-//        for (User u: userList) {
-//            if(Integer.parseInt(u.getPhoneNumber()) == Integer.parseInt(number))
-//            {
-//
-//            }
-//
-//        }
-//        return "/home";
-//    }
+    @PostMapping("/addmember")
+    public ModelAndView addmember(@RequestParam("name") String name, @RequestParam (required = false)  String number, @RequestParam() String groupName)
+    {
+        groupServices.addMemberToGroup(number,groupName,name);
+        return new ModelAndView("redirect:/home");
+    }
 
 
 }
