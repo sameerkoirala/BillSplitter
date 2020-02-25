@@ -20,13 +20,13 @@ public class BillingDetails {
     private String amount;
     private String paidBy;
     private String splitedOn ;
-    private String date;
+    private Date date;
     private String groupName;
 
 
     public BillingDetails(){}
 
-    public BillingDetails(int transId, double spittedAmount, String description, String amount, String paidBy, String splitedOn,String date,String groupName) {
+    public BillingDetails(int transId, double spittedAmount, String description, String amount, String paidBy, String splitedOn,Date date,String groupName) {
         this.spittedAmount = spittedAmount;
         this.description = description;
         this.amount = amount;
@@ -44,11 +44,11 @@ public class BillingDetails {
     public void setGroupName(String groupName) {
         this.groupName = groupName;
     }
-    public String getDate() {
+    public Date getDate() {
         return date;
     }
 
-    public void setDate(String date) {
+    public void setDate(Date date) {
         this.date = date;
     }
 

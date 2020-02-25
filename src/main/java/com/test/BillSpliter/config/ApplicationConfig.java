@@ -1,15 +1,16 @@
 package com.test.BillSpliter.config;
 
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.task.AsyncTaskExecutor;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+import org.springframework.web.servlet.config.annotation.AsyncSupportConfigurer;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 import org.springframework.web.servlet.view.JstlView;
-
-
-import javax.xml.ws.spi.WebServiceFeatureAnnotation;
 
 @Configuration
 @ComponentScan(basePackages="com.test.BillSpliter")
@@ -31,5 +32,22 @@ public class ApplicationConfig extends WebMvcConfigurationSupport {
         viewResolver.setViewClass(JstlView.class);
         return viewResolver;
     }
+
+    @Override
+    public void configureAsyncSupport(AsyncSupportConfigurer configurer)
+    {
+        configurer.setDefaultTimeout(12000);
+        configurer.setTaskExecutor(mvcTaskExecutor());
+    }
+
+    @Bean
+    public AsyncTaskExecutor mvcTaskExecutor()
+    {
+        ThreadPoolTaskExecutor threadPoolTaskExecutor = new ThreadPoolTaskExecutor();
+        threadPoolTaskExecutor.setThreadNamePrefix("SplittingApplication-thread-");
+        return threadPoolTaskExecutor;
+    }
+
+
 
 }

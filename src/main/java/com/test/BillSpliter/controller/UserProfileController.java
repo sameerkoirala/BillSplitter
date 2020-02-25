@@ -18,6 +18,7 @@ import javax.servlet.http.HttpSession;
 import java.awt.image.AreaAveragingScaleFilter;
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.concurrent.Callable;
 
 @Controller
 public class UserProfileController {
@@ -32,32 +33,35 @@ public class UserProfileController {
 
 
     @GetMapping({"/","/home"})
-    public String userProfile(Model model,HttpSession session)
+    public Callable<String> userProfile(Model model, HttpSession session)
     {
-        String username = session.getAttribute("userName").toString();
-        int id = userServices.getUserByUsername(username).getId();
-        model.addAttribute("name",userServices.getUserByUsername(username).getFullName());
-        model.addAttribute("groupName",groupServices.getGroupNameList(id));
+        return ()->{
+            String username = session.getAttribute("userName").toString();
+            int id = userServices.getUserByUsername(username).getId();
+            model.addAttribute("name",userServices.getUserByUsername(username).getFullName());
+            model.addAttribute("groupName",groupServices.getGroupNameList(id));
 
-        if(session.getAttribute("groupName") != null) {
-            String groupName = session.getAttribute("groupName").toString();
-            ArrayList<String> nameList = new ArrayList<String>();
-            nameList = userServices.userNameList(groupName);
-            model.addAttribute("nameLists",nameList);
-            model.addAttribute("gName",groupName);
-            ArrayList<BillingDetails> list = billingServices.getBillingDetails(groupName);
-            if(list !=null) {
-                model.addAttribute("billingDetailsList",list);
+            if(session.getAttribute("groupName") != null) {
+                String groupName = session.getAttribute("groupName").toString();
+                ArrayList<String> nameList = new ArrayList<String>();
+                nameList = userServices.userNameList(groupName);
+                model.addAttribute("nameLists",nameList);
+                model.addAttribute("gName",groupName);
+                ArrayList<BillingDetails> list = billingServices.getBillingDetails(groupName);
+                if(list !=null) {
+                    model.addAttribute("billingDetailsList",list);
 
+                }
             }
-        }
-        Map<String,ArrayList<Person>> getdata = (Map<String,ArrayList<Person>>) model.asMap().get("data");
-        if (getdata != null)
-        {
-            model.addAttribute("data",getdata);
-        }
+            Map<String,ArrayList<Person>> getdata = (Map<String,ArrayList<Person>>) model.asMap().get("data");
+            if (getdata != null)
+            {
+                model.addAttribute("data",getdata);
+            }
 
-        return "index";
+            return "index";
+        };
+
 
     }
 

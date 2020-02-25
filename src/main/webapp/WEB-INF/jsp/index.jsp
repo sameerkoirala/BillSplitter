@@ -148,10 +148,13 @@
         </li>
 
         <!-- Nav Item - Tables -->
-        <li class="nav-item">
-            <a class="nav-link" href="tables.html">
-                <i class="fas fa-fw fa-table"></i>
-                <span>Tables</span></a>
+        <c:if test="${!empty(gName)}">
+        <li class="nav-item addMember-responsive" >
+            <a class="nav-link " href="#" data-toggle="modal" data-target="#modaladdMemberForm">
+                <i class="fas fa-plus fa-sm text-white-50"></i>
+                <span>Add Member</span></a>
+            </c:if>
+
         </li>
 
         <!-- Divider -->
@@ -302,12 +305,12 @@
                 <div class="d-sm-flex align-items-center justify-content-between mb-4">
                     <c:choose>
                         <c:when test="${!empty(gName)}">
-                            <h1 class="h3 mb-0 text-gray-800">Dashboard for ${gName} group </h1>
-                            <a href="#" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm" data-toggle="modal" data-target="#modaladdMemberForm"><i
+                            <h1 class="h3 mb-0 text-gray-800 heading-responsive">${gName} group </h1>
+                            <a href="#" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm " data-toggle="modal" data-target="#modaladdMemberForm"><i
                                     class="fas fa-plus fa-sm text-white-50" ></i> Add Member</a>
                         </c:when>
                         <c:otherwise>
-                            <h1 class="h3 mb-0 text-gray-800">Dashboard for selecting or creating  a group  </h1>
+                            <h1 class="h3 mb-0 text-gray-800 heading-responsive">Select a Group  </h1>
                         </c:otherwise>
                     </c:choose>
 
@@ -359,15 +362,24 @@
                                         </div>
                                     </div>
 
-                                <table class="table col-12" >
+                                <%--<table class="table col-12" >
                                     <tr class = "d-flex">
-                                        <td class="col-1">Split On:</td>
+                                        <td class="col-1 mobile-respon">Split On:</td>
 
                                     <td class="col-10">
                                         <form:checkboxes element="span class='checkbox col-md-3'"  path="splitedOn" class="form-check-input" items="${nameLists}" id="inlineCheckbox1"/>
                                     </td>
                                     </tr>
-                                </table>
+                                </table>--%>
+
+                                    <div class="col-12 py-2" >
+
+                                            <div class="d-inline-block pr-3">Split On:</div>
+
+                                            <div class="d-inline-block">
+                                                <form:checkboxes element="span class='checkbox col-md-3 span-responsive'"  path="splitedOn" class="form-check-input" items="${nameLists}" id="inlineCheckbox1"/></div>
+
+                                    </div>
                                     <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
 
 
@@ -427,8 +439,8 @@
                         <!-- Earnings (Monthly) Card Example -->
                         <div class="col-xl-12 col-md-12 mb-12">
                             <div class="card border-left-primary shadow h-100 py-2">
-                                <div class="card-body">
-                                    <table class="table">
+                                <div class="card-body" style="overflow-y:scroll; height: 400px">
+                                    <table class="table " >
                                         <thead>
                                         <th scope="col">Date</th>
                                         <th scope="col">Paid By</th>
@@ -440,12 +452,12 @@
                                         <tbody>
                                         <c:forEach items = "${billingDetailsList}" var = "billLists">
                                             <tr>
-                                                <td>${billLists.date}</td>
-                                                <td>${billLists.paidBy}</td>
-                                                <td>${billLists.description}</td>
-                                                <td>${billLists.amount}</td>
-                                                <td>${billLists.spittedAmount}</td>
-                                              <td>  <c:forEach items = "${billLists.splitedOn}" var="nList">
+                                                <td class="td-bills">${billLists.date}</td>
+                                                <td class="td-bills">${billLists.paidBy}</td>
+                                                <td class="td-bills">${billLists.description}</td>
+                                                <td class="td-bills">${billLists.amount}</td>
+                                                <td class="td-bills">${billLists.spittedAmount}</td>
+                                              <td class="td-bills">  <c:forEach items = "${billLists.splitedOn}" var="nList">
                                                    <spam> ${nList}</spam>,
                                                 </c:forEach></td>
                                                 <td><button class="btn btn-block btn-danger" onclick="location.href='/remove?id=${billLists.transId}'">Remove</button></td>
@@ -475,7 +487,9 @@
                                             </c:forEach></td>
                                         </c:forEach>
                                         </tr>
+
                                     </table>
+                                    <button type="button" onclick="location.href='/download'"  class ="btn btn-outline-primary"> Download Settlement</button>
                                 </div>
                             </div>
                         </div>

@@ -1,17 +1,20 @@
 package com.test.BillSpliter.Component;
 
+
 import com.test.BillSpliter.Services.BillingServices;
 import com.test.BillSpliter.beans.BillingDetails;
 import com.test.BillSpliter.beans.Person;
-import com.test.BillSpliter.repository.BillingRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
+
 import java.util.Map;
+
 
 @Component
 public class SplittingBills {
@@ -38,7 +41,6 @@ public class SplittingBills {
         for(BillingDetails bd:billingDetailList)
         {
             splitting(bd);
-            //billingServices.addToBill(bd);
         }
 
         ArrayList<String> keyList = new ArrayList<String>();
@@ -52,18 +54,17 @@ public class SplittingBills {
             if(value1 != null) {
                 for (int j = 0; j < value1.size(); j++) {
                     if (settlementList.get(value1.get(j).getName()) != null) {
-                        settlementCalculation(value1, settlementList.get(value1.get(j).getName()), value1.get(j).getAmount(), j, key1);
-                        //removalKeyList.add(removalKey);
+                        j = settlementCalculation(value1, settlementList.get(value1.get(j).getName()), value1.get(j).getAmount(), j, key1);
                     }
                 }
             }
         }
-
         return settlementList;
     }
 
-    public void settlementCalculation(ArrayList<Person> personList1, ArrayList<Person> personList2,double amount,int index,String key1)
+    public int settlementCalculation(ArrayList<Person> personList1, ArrayList<Person> personList2,double amount,int index,String key1)
     {
+        int returnIndex = index;
         double amountToBeReduce  = personList1.get(index).getAmount();
         String key2 =personList1.get(index).getName();
         outterloop:
@@ -76,7 +77,6 @@ public class SplittingBills {
                     double subAmount =  Double.parseDouble(decimalFormat.format(personList2.get(j).getAmount() - amountToBeReduce)) ;
                     if(subAmount >0)
                     {
-
                         double calAmount = amountToBeReduce+ personList1.get(i).getAmount();
                         calAmount = Double.parseDouble(decimalFormat.format(calAmount));
                         personList1.get(i).setAmount(calAmount);
@@ -84,6 +84,7 @@ public class SplittingBills {
                         settlementList.put(key1,personList1);
                          personList2.get(j).setAmount(subAmount);
                          settlementList.put(key2,personList2);
+                         returnIndex = index -1;
                          break outterloop;
                     }
                     else
@@ -109,20 +110,17 @@ public class SplittingBills {
                 }
             }
         }
+        return returnIndex;
     }
 
     public void splitting(BillingDetails bd) {
-        BillingDetails billingDetails = new BillingDetails();
-        billingDetails = bd;
+        BillingDetails billingDetails = bd;
         String paidByName = billingDetails.getPaidBy();;
        String[] nameList = billingDetails.getSplitedOn().split(",");
-        //totalAmount = Double.parseDouble(billingDetails.getAmount());
+
 
         if (nameList.length != 0) {
             splitedAmount = billingDetails.getSpittedAmount();
-//            splitedAmount = totalAmount / (nameList.length + 0.0);
-//            splitedAmount = Double.parseDouble(decimalFormat.format(splitedAmount));
-            int personIndex = -1;
             for (String s : nameList) {
                 if (!(s).trim().equalsIgnoreCase(paidByName.trim())) {
                     double newAmount = 1;
@@ -155,7 +153,7 @@ public class SplittingBills {
                     } else if (newAmount < 0) {
                         ArrayList<Person> pList = new ArrayList<Person>();
                         if(settlementList.get(paidByName) != null) {pList = settlementList.get(paidByName);}
-                        newAmount = Double.parseDouble(decimalFormat.format((newAmount * -1)));
+                        newAmount = newAmount * -1;
                         pList.add(new Person(s, newAmount));
                         settlementList.put(paidByName, pList);
                     }
@@ -210,5 +208,6 @@ public class SplittingBills {
     {
         return billingDetailList;
     }
+    public Map<String,ArrayList<Person>> getSettlementList(){return settlementList;}
 
 }
